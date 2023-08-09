@@ -1,0 +1,43 @@
+// Add a shortcode for the word styler
+add_shortcode( 'word_style', 'generate_word_styles' );
+
+// Function to generate different styles for a given word or name
+function generate_word_styles() {
+    $output = '';
+    
+    // Check if a name or word has been submitted
+    if (isset($_POST['word'])) {
+        $word = $_POST['word'];
+        // Generate a URL for the Google Fonts API
+        $url = 'https://fonts.googleapis.com/css?family=';
+        $font_families = array('Amatic SC', 'Pacifico', 'Dancing Script', 'Great Vibes', 'Lobster', 'Montserrat', 'Open Sans', 'Roboto', 'Source Sans Pro', 'Ubuntu');
+        foreach ($font_families as $font_family) {
+            $url .= str_replace(' ', '+', $font_family) . '|';
+        }
+        
+        // Generate a CSS style for the name using each font family
+        $styles = '';
+        foreach ($font_families as $font_family) {
+            $styles .= ".font-$font_family { font-family: '$font_family', cursive; }\n";
+        }
+        
+        // Generate HTML code for the name using each font style
+        $html = '';
+        foreach ($font_families as $font_family) {
+            $html .= "<div class=\"font-$font_family\">$word</div>\n";
+        }
+        
+        // Combine the URL, CSS styles, and HTML code into a single string
+        $output .= "<link href=\"$url\" rel=\"stylesheet\">\n<style>\n$styles</style>\n$html";
+    }
+    
+    // Add a form for submitting a name or word
+    $output .= '<form method="post" action="' . get_permalink() . '">';
+    $output .= '<label for="word">Enter a name or word:</label>';
+    $output .= '<input type="text" name="word" id="word">';
+    $output .= '<button type="submit">Generate styles</button>';
+    $output .= '</form>';
+    
+    return $output;
+}
+?>
